@@ -1,0 +1,17 @@
+create TreapNode class
+create treap class
+create rotations algorithmss
+    right: 
+    x = y.left (New node is the child of y to the left)
+    y.left = x.right
+    x.right = y (Rotation performed)
+    left:
+    repeat above
+insert function:
+    if current node is None return new node
+    if key is less than root key call insert func recursively 
+    fix heap priority
+    repeat if key is greater than current node key
+delete function:
+    if current node is none return
+    

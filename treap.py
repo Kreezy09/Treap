@@ -1,161 +1,113 @@
-import random 
+import random
 
-# A Treap Node
+#treap node class
 class TreapNode:
-	def __init__(self, key):
-		self.key = key
-		self.priority = random.randint(0, 99)
-		self.left = None
-		self.right = None
+    def __init__(self,key):
+        self.key = key
+        self.priority = random.randint(0, 99)
+        self.left = None
+        self.right = None
 
-# T1, T2 and T3 are subtrees of the tree rooted with y
-# (on left side) or x (on right side)
-#			 y							 x
-#			 / \	 Right Rotation		 / \
-#			 x T3 – – – – – – – >	 T1 y
-#			 / \	 < - - - - - - -		 / \
-#		 T1 T2	 Left Rotation		 T2 T3 */
+#treap class
+class Treap:
+    def __init__(self):
+        self.root = None
 
-# A utility function to right rotate subtree rooted with y
-# See the diagram given above.
+    #Right and left rotations
+    def rightRotation(self, y):
+        x = y.left
+        y.left = x.right
+        x.right = y
+        return x
 
-def rightRotate(y):
-	x = y.left
-	T2 = x.right
-	
-	# Perform rotation
-	x.right = y
-	y.left = T2
-	
-	# Return new root
-	return x
-	
-def leftRotate(x):
-	y = x.right
-	T2 = y.left
-	
-	# Perform rotation
-	y.left = x
-	x.right = T2
-	
-	# Return new root
-	return y
+    def leftRotation(self, x):
+        y = x.right 
+        x.right = y.left   
+        y.left = x
+        return y
 
-def insert(root, key):
-	# If root is None, create a new node and return it
-	if not root:
-		return TreapNode(key)
-	
-	# If key is smaller than root
-	if key <= root.key:
-		# Insert in left subtree
-		root.left = insert(root.left, key)
-		
-		# Fix Heap property if it is violated
-		if root.left.priority > root.priority:
-			root = rightRotate(root)
-	else:
-		# Insert in right subtree
-		root.right = insert(root.right, key)
-		
-		# Fix Heap property if it is violated
-		if root.right.priority > root.priority:
-			root = leftRotate(root)
-	return root
+    def insert(self, current_node, key):
+        if not current_node:
+            return TreapNode(key)
+        #Check if key is smaller than the current node
+        if key <= current_node.key:
+            current_node.left = self.insert(current_node.left, key)
+            
+            #Perform rotations to ensure priority is adhered to
+            if current_node.left.priority > current_node.priority:
+                current_node = self.rightRotation(current_node)
+        else:
+            current_node.right = self.insert(current_node.right, key)
+            
+            #Fix heap
+            if current_node.right.priority > current_node.priority:
+                current_node = self.leftRotation(current_node)
+        return current_node
 
-def deleteNode(root, key):
-	if not root:
-		return root
-	
-	if key < root.key:
-		root.left = deleteNode(root.left, key)
-	elif key > root.key:
-		root.right = deleteNode(root.right, key)
-	else:
-		# IF KEY IS AT ROOT
+    def delete(self, current_node, key):
+        if not current_node:
+            return current_node
+        
+        if key < current_node.key:
+            current_node.left = self.delete(current_node.left, key)
+        elif key > current_node.key:
+            current_node.right = self.delete(current_node.right, key)
+        else:
+            if not current_node.left:
+                return current_node.right
+            elif not current_node.right:
+                return current_node.left
+            
+            elif current_node.left.priority < current_node.right.priority:
+                current_node = self.leftRotation(current_node)
+                current_node.left = self.delete(current_node.left, key)
+            else:
+                current_node = self.rightRotation(current_node)
+                current_node.right = self.delete(current_node.right, key)
+        return current_node
 
-		# If left is None
-		if not root.left:
-			temp = root.right
-			root = None
-			return temp
+    def search(self, current_node, key):
+        if not current_node or current_node.key == key:
+            return current_node
+        
+        if key < current_node.key:
+            return self.search(current_node.left, key)
+        
+        return self.search(current_node.right, key)
 
-		# If right is None
-		elif not root.right:
-			temp = root.left
-			root = None
-			return temp
-		
-		# If key is at root and both left and right are not None
-		elif root.left.priority < root.right.priority:
-			root = leftRotate(root)
-			root.left = deleteNode(root.left, key)
-		else:
-			root = rightRotate(root)
-			root.right = deleteNode(root.right, key)
+    def inorder(self, current_node):
+        if current_node:
+            self.inorder(current_node.left)
+            print("Key: ", current_node.key, "Priority: ", current_node.priority)
+            self.inorder(current_node.right)
 
-	return root
-
-# A utility function to search a given key in a given BST
-def search(root, key):
-	# Base Cases: root is None or key is present at root
-	if not root or root.key == key:
-		return root
-	
-	# Key is greater than root's key
-	if root.key < key:
-		return search(root.right, key)
-	
-	# Key is smaller than root's key
-	return search(root.left, key)
-
-# A utility function to print tree
-def inorder(root):
-	if root:
-		inorder(root.left)
-		print("key:", root.key, "| priority:", root.priority, end="")
-		if root.left:
-			print(" | left child:", root.left.key, end="")
-		if root.right:
-			print(" | right child:", root.right.key, end="")
-		print()
-		inorder(root.right)
-
-# Driver Program to test above functions
 if __name__ == '__main__':
-	random.seed(0)
+    treap = Treap()
+        # Insert nodes into the treap
+    treap.root = treap.insert(treap.root, 50)
+    treap.root = treap.insert(treap.root, 30)
+    treap.root = treap.insert(treap.root, 20)
+    treap.root = treap.insert(treap.root, 40)
+    treap.root = treap.insert(treap.root, 70)
+    treap.root = treap.insert(treap.root, 60)
+    treap.root = treap.insert(treap.root, 80)
+    
+    print("Inorder traversal of the treap:")
+    treap.inorder(treap.root)
 
-	root = None
-	root = insert(root, 50)
-	root = insert(root, 30)
-	root = insert(root, 20)
-	root = insert(root, 40)
-	root = insert(root, 70)
-	root = insert(root, 60)
-	root = insert(root, 80)
-
-	print("Inorder traversal of the given tree")
-	inorder(root)
-	
-	print("\nDelete 20")
-	root = deleteNode(root, 20)
-	print("Inorder traversal of the modified tree")
-	inorder(root)
-
-	print("\nDelete 30")
-	root = deleteNode(root, 30)
-	print("Inorder traversal of the modified tree")
-	inorder(root)
-
-	print("\nDelete 50")
-	root = deleteNode(root, 50)
-	print("Inorder traversal of the modified tree")
-	inorder(root)
-
-	res = search(root, 50)
-	if res is None:
-		print("50 Not Found")
-	else:
-		print("50 found")
-
-# This code is contributed by Amit Mangal.
+    # Search for a node in the treap
+    key_to_search = 40
+    search_result = treap.search(treap.root, key_to_search)
+    if search_result:
+        print(f"Node with key {key_to_search} found in the treap.")
+    else:
+        print(f"Node with key {key_to_search} not found in the treap.")
+    
+    # Delete a node from the treap
+    key_to_delete = 30
+    treap.root = treap.delete(treap.root, key_to_delete)
+    print(f"Deleted node with key {key_to_delete}.")
+    
+    # Print the treap after deletion
+    print("Inorder traversal of the modified treap:")
+    treap.inorder(treap.root)
