@@ -77,10 +77,24 @@ class Treap:
 
     def inorder(self, current_node):
         if current_node:
-            self.inorder(current_node.left)
+            self.inorder(current_node.left) #Recur on left subtree
             print("Key: ", current_node.key, "Priority: ", current_node.priority)
-            self.inorder(current_node.right)
+            self.inorder(current_node.right) # REcur on right subtree
+        
+    def preorder(self, current_node):
+        if current_node:
+            print("Key: ", current_node.key, "Priority: ", current_node.priority)
+            self.preorder(current_node.left)  # Recur on left subtree
+            self.preorder(current_node.right)  # Recur on right subtree
+            
+    def postorder(self, current_node):
+        if current_node:
+            self.postorder(current_node.left)  # Recur on left subtree
+            self.postorder(current_node.right)  # Recur on right subtree
+            print("Key: ", current_node.key, "Priority: ", current_node.priority)
 
+            
+    
 if __name__ == '__main__':
     treap = Treap()
         # Insert nodes into the treap
@@ -92,16 +106,22 @@ if __name__ == '__main__':
     treap.root = treap.insert(treap.root, 60)
     treap.root = treap.insert(treap.root, 80)
     
-    print("Inorder traversal of the treap:")
+    print("Inorder traversal:")
     treap.inorder(treap.root)
+    
+    print("Preorder travesal:")
+    treap.preorder(treap.root)
+    
+    print("Postorder traversal:")
+    treap.postorder(treap.root)
 
     # Search for a node in the treap
-    key_to_search = 40
-    search_result = treap.search(treap.root, key_to_search)
+    key = int(input("Enter key: "))
+    search_result = treap.search(treap.root, key)
     if search_result:
-        print(f"Node with key {key_to_search} found in the treap.")
+        print(f"Node with key {key} found in the treap.")
     else:
-        print(f"Node with key {key_to_search} not found in the treap.")
+        print(f"Node with key {key} not found in the treap.")
     
     # Delete a node from the treap
     key_to_delete = 30
